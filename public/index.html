@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DFS Maze Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Data Structures Mini Project</p>
+        <h1>DFS Maze Lab</h1>
+        <p class="subtitle">Generate a perfect maze with Depth-First Search, powered by C++.</p>
+      </div>
+      <div class="badge"><span></span> C++ engine online</div>
+    </header>
+
+    <section class="workspace">
+      <aside class="controls card">
+        <h2>Maze controls</h2>
+        <label for="size">Grid size <strong id="sizeValue">20 × 20</strong></label>
+        <input id="size" type="range" min="8" max="28" value="20">
+        <label for="seed">Seed <small>(optional)</small></label>
+        <input id="seed" type="number" placeholder="Random every time">
+        <button id="generate" class="primary">Generate maze <span>→</span></button>
+        <button id="animate" class="secondary">Show DFS traversal</button>
+        <div class="legend">
+          <div><i class="start"></i> Start</div>
+          <div><i class="finish"></i> Finish</div>
+          <div><i class="visited"></i> DFS order</div>
+        </div>
+      </aside>
+
+      <section class="board-card card">
+        <div class="board-heading">
+          <div>
+            <p class="eyebrow">Live visualization</p>
+            <h2 id="status">Ready to generate</h2>
+          </div>
+          <div class="stats"><span id="cellCount">0</span><small>cells visited</small></div>
+        </div>
+        <div class="maze-wrap"><canvas id="maze" aria-label="Generated DFS maze"></canvas></div>
+      </section>
+    </section>
+
+    <footer>
+      <span>Algorithm: randomized DFS with an explicit stack</span>
+      <span id="seedLabel">Seed: —</span>
+    </footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

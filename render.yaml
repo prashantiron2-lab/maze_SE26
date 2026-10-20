@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: dfs-maze-lab
+    runtime: node
+    buildCommand: npm install && g++ -std=c++17 -O2 maze_dfs.cpp -o maze_dfs.exe
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MAZE_ONLY
+        value: "true"
