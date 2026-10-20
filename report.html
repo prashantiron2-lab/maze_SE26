@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DFS Maze Lab - Project Report</title>
+<style>
+@page { size: A4; margin: 18mm 17mm 17mm; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #172238; font: 10.5pt/1.55 "Segoe UI", Arial, sans-serif; }
+h1,h2,h3 { color: #102d4f; line-height: 1.2; }
+h1 { font-size: 34pt; margin: 0 0 10px; letter-spacing: -1px; }
+h2 { font-size: 19pt; border-bottom: 2px solid #19a9b3; padding-bottom: 7px; margin: 0 0 18px; }
+h3 { font-size: 13pt; margin: 19px 0 7px; }
+p { margin: 7px 0 11px; }
+ul,ol { margin-top: 5px; padding-left: 23px; }
+li { margin: 4px 0; }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; padding: 22mm; color: white; background: linear-gradient(135deg,#081629,#12496b 65%,#1bb7bd); }
+.cover h1,.cover h2,.cover p { color: white; border: 0; }
+.cover h2 { font-size: 17pt; font-weight: 400; margin: 5px 0 55px; }
+.eyebrow { color: #55e2df; text-transform: uppercase; font-size: 9pt; letter-spacing: 2px; font-weight: bold; }
+.cover .meta { border-top: 1px solid #8bd8df; padding-top: 14px; max-width: 480px; }
+.section { page-break-before: always; }
+.section:first-of-type { page-break-before: auto; }
+.lead { font-size: 12pt; color: #4a5e78; }
+.card { background: #f0f7fb; border-left: 4px solid #17aab2; padding: 12px 15px; margin: 12px 0; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat { background: #102d4f; color: white; padding: 13px; border-radius: 7px; }
+.stat strong { display:block; color:#55e2df; font-size:18pt; }
+.flow { display:flex; align-items:stretch; gap:7px; margin: 18px 0; }
+.flow div { flex:1; background:#eaf5f7; border:1px solid #99d4d7; padding:10px; text-align:center; border-radius:6px; font-weight:bold; }
+.flow b { align-self:center; color:#159ba4; font-size:18px; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 17px; }
+th { background:#102d4f; color:white; text-align:left; }
+td,th { border:1px solid #cbd8e3; padding:7px 8px; vertical-align:top; }
+tr:nth-child(even) td { background:#f6f9fb; }
+pre { white-space: pre-wrap; background:#111d2d; color:#e9f2fa; border-radius:6px; padding:13px; font: 8.2pt/1.45 Consolas, "Courier New", monospace; }
+code { font-family: Consolas, monospace; color:#0d6b78; }
+.caption { color:#60748c; font-size:9pt; text-align:center; margin-top:5px; }
+img { max-width:100%; display:block; margin: 12px auto; border:1px solid #c6d3df; }
+.small { font-size:9pt; color:#60748c; }
+.toc li { margin: 8px 0; }
+.page-note { color:#60748c; font-size:9pt; border-top:1px solid #d7e2ec; padding-top:7px; margin-top:20px; }
+.avoid-break { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+<section class="cover">
+  <div class="eyebrow">Data Structures and Algorithms Mini Project</div>
+  <h1>DFS Maze Lab</h1>
+  <h2>Web-based maze generation and traversal using Depth-First Search in C++</h2>
+  <p class="lead" style="color:#d9f1f5">A full-stack demonstration in which the core maze algorithm is implemented in C++ and exposed through a Node.js API for an interactive browser interface.</p>
+  <div class="meta">
+    <p><strong>Primary topic:</strong> Graph traversal, recursion replacement with an explicit stack, randomized maze generation</p>
+    <p><strong>Technology:</strong> C++17, Node.js, Express, HTML, CSS, JavaScript, Canvas, Render</p>
+    <p><strong>Repository:</strong> github.com/prashantiron2-lab/maze_SE26</p>
+  </div>
+</section>
+
+<section class="section">
+<h2>1. Project Overview</h2>
+<p class="lead">DFS Maze Lab generates a perfect maze in C++ and presents the result as an interactive web visualization.</p>
+<p>The project demonstrates how a classical data-structures algorithm can be integrated into a modern web application. The C++ program is responsible for the algorithmic work: it creates the maze, manages the visited state, uses an explicit stack to perform Depth-First Search, removes walls between connected cells, and returns the result as JSON. The Node.js server acts as a bridge between the browser and the compiled C++ program.</p>
+<div class="grid">
+  <div class="stat"><strong>DFS</strong>Traversal strategy</div>
+  <div class="stat"><strong>C++17</strong>Core implementation</div>
+  <div class="stat"><strong>Canvas</strong>Maze rendering</div>
+  <div class="stat"><strong>Render</strong>Public deployment</div>
+</div>
+<h3>Project objectives</h3>
+<ul>
+  <li>Implement maze generation using Depth-First Search.</li>
+  <li>Use a custom stack concept rather than relying on recursive calls.</li>
+  <li>Represent maze cells and walls in a structured, understandable form.</li>
+  <li>Expose C++ output to a browser through a local web API.</li>
+  <li>Visualize both the generated maze and the complete DFS visit order.</li>
+  <li>Deploy the result as a shareable web application.</li>
+</ul>
+<h3>Scope and terminology</h3>
+<p>This project demonstrates <strong>DFS-based maze generation and traversal visualization</strong>. The “Show DFS traversal” action replays the complete visit order produced by the C++ generator, so every cell is visited exactly once. It is not a shortest-path solver; shortest-path search would be an additional feature.</p>
+</section>
+
+<section class="section">
+<h2>2. System Architecture</h2>
+<div class="flow">
+  <div>Browser UI<br><small>HTML / CSS / JS</small></div><b>→</b>
+  <div>Express API<br><small>Query validation</small></div><b>→</b>
+  <div>C++ process<br><small>DFS engine</small></div><b>→</b>
+  <div>JSON response<br><small>Maze + visit order</small></div>
+</div>
+<h3>Execution flow</h3>
+<ol>
+  <li>The browser loads the static files from the Express server.</li>
+  <li>On page load or when the user clicks <em>Generate maze</em>, JavaScript sends a request to <code>/api/maze/generate</code>.</li>
+  <li>The server validates the row count, column count, and optional seed. Valid dimensions are from 5 to 35.</li>
+  <li>The server runs the compiled C++ executable with rows, columns, and seed as command-line arguments.</li>
+  <li>The C++ program generates the maze and writes a JSON object to standard output.</li>
+  <li>Express parses that JSON and sends it to the browser.</li>
+  <li>JavaScript draws walls on an HTML Canvas and can animate the returned <code>visitOrder</code>.</li>
+</ol>
+<h3>Application layers</h3>
+<table><tr><th>Layer</th><th>Implementation</th><th>Responsibility</th></tr>
+<tr><td>Algorithm</td><td><code>maze_dfs.cpp</code></td><td>Randomized DFS, stack, visited cells, wall removal, JSON output.</td></tr>
+<tr><td>Server</td><td><code>src/index.js</code></td><td>Static hosting, validation, C++ process execution, API response handling.</td></tr>
+<tr><td>Presentation</td><td><code>public/index.html</code>, <code>styles.css</code>, <code>app.js</code></td><td>User controls, responsive layout, Canvas rendering, traversal animation.</td></tr>
+<tr><td>Deployment</td><td><code>render.yaml</code></td><td>Build and start commands for Render, including C++ compilation.</td></tr>
+</table>
+</section>
+
+<section class="section">
+<h2>3. Core C++ Implementation</h2>
+<p>The main web algorithm is implemented in <code>maze_dfs.cpp</code>. It uses standard C++17 libraries only: <code>iostream</code> for output, <code>random</code> for repeatable random choices, and <code>vector</code> for dynamic arrays.</p>
+<h3>3.1 Data structures</h3>
+<pre>struct Cell {
+    bool walls[4] = {true, true, true, true};
+};
+
+struct Position {
+    int row;
+    int col;
+};</pre>
+<p>Each <code>Cell</code> stores four wall flags in this order: up, right, down, and left. A value of <code>true</code> means the wall exists. A <code>Position</code> stores a row and column coordinate. This makes the algorithm easy to map onto a two-dimensional grid while storing the grid internally as a one-dimensional vector.</p>
+<h3>3.2 Command-line input and validation</h3>
+<pre>const int rows = argc &gt; 1 ? std::stoi(argv[1]) : 20;
+const int cols = argc &gt; 2 ? std::stoi(argv[2]) : 20;
+const unsigned int seed = argc &gt; 3
+    ? static_cast&lt;unsigned int&gt;(std::stoul(argv[3]))
+    : std::random_device{}();</pre>
+<p>The program accepts optional rows, columns, and seed values. Defaults are 20 × 20 with a random seed. A size range of 5–35 prevents unreasonable requests and keeps browser rendering practical. A supplied seed makes a maze reproducible, which is useful for demonstrations and debugging.</p>
+<h3>3.3 Grid indexing</h3>
+<pre>auto index = [cols](int row, int col) {
+    return row * cols + col;
+};</pre>
+<p>The lambda converts a two-dimensional coordinate into a vector index. For example, in a grid with 20 columns, cell (3, 4) is stored at index 64. This avoids a fixed-size matrix and allows the selected dimensions to be passed at runtime.</p>
+</section>
+
+<section class="section">
+<h2>4. DFS Algorithm in Detail</h2>
+<h3>4.1 Direction arrays</h3>
+<pre>const int rowMove[4] = {-1, 0, 1, 0};
+const int colMove[4] = {0, 1, 0, -1};
+const int opposite[4] = {2, 3, 0, 1};</pre>
+<p>The direction arrays describe movement in the four compass directions. Direction 0 moves up, 1 moves right, 2 moves down, and 3 moves left. The <code>opposite</code> array ensures that when a wall is removed from one cell, the corresponding wall is also removed from its neighbor.</p>
+<h3>4.2 Initialization</h3>
+<pre>std::vector&lt;Cell&gt; maze(rows * cols);
+std::vector&lt;bool&gt; visited(rows * cols, false);
+std::vector&lt;Position&gt; stack;
+std::vector&lt;Position&gt; visitOrder;</pre>
+<p>All cells initially have four walls and are unvisited. The stack represents the DFS frontier. The separate <code>visitOrder</code> vector records the order in which cells are first reached; the browser later uses this list for animation.</p>
+<h3>4.3 Starting DFS</h3>
+<pre>stack.push_back({0, 0});
+visited[0] = true;
+visitOrder.push_back({0, 0});</pre>
+<p>DFS starts at the top-left cell. That cell is immediately marked visited and pushed onto the stack. Marking before pushing prevents the same cell from being added again.</p>
+<h3>4.4 Selecting an unvisited neighbor</h3>
+<pre>while (!stack.empty()) {
+    Position current = stack.back();
+    std::vector&lt;int&gt; available;
+
+    for (int direction = 0; direction &lt; 4; direction++) {
+        int nextRow = current.row + rowMove[direction];
+        int nextCol = current.col + colMove[direction];
+        if (inside(nextRow, nextCol) &&
+            !visited[index(nextRow, nextCol)]) {
+            available.push_back(direction);
+        }
+    }</pre>
+<p>The top stack item is the current cell. The program checks all four possible neighbors, ignores positions outside the grid, and keeps only unvisited neighbors. If at least one exists, <code>std::mt19937</code> and <code>std::uniform_int_distribution</code> select one uniformly. Random selection makes each generated maze different while still being repeatable for a fixed seed.</p>
+<h3>4.5 Carving a passage</h3>
+<pre>maze[index(current.row, current.col)].walls[direction] = false;
+maze[index(nextRow, nextCol)].walls[opposite[direction]] = false;
+visited[index(nextRow, nextCol)] = true;
+stack.push_back({nextRow, nextCol});
+visitOrder.push_back({nextRow, nextCol});</pre>
+<p>A passage is created by removing the wall on both sides of the connection. The new cell is marked visited, pushed onto the stack, and added to the visit order. This is the core DFS expansion step.</p>
+<h3>4.6 Backtracking</h3>
+<pre>if (available.empty()) {
+    stack.pop_back();
+    continue;
+}</pre>
+<p>When the current cell has no unvisited neighbors, DFS backtracks by removing it from the stack. The next loop iteration examines the previous cell. This explicit stack is the iterative equivalent of recursive DFS and avoids recursion-depth limitations.</p>
+</section>
+
+<section class="section">
+<h2>5. Maze Completion and Output</h2>
+<h3>Entrance and exit</h3>
+<pre>maze[0].walls[0] = false;
+maze[index(rows - 1, cols - 1)].walls[2] = false;</pre>
+<p>After all cells have been reached, the top wall of the starting cell is opened as the entrance. The bottom wall of the bottom-right cell is opened as the exit. The internal maze passages remain generated by DFS.</p>
+<h3>JSON response structure</h3>
+<pre>{
+  "rows": 20,
+  "cols": 20,
+  "seed": 123,
+  "visitedCells": 400,
+  "cells": [[{"walls":[0,0,1,1]}, ...]],
+  "visitOrder": [[0,0], [0,1], ...]
+}</pre>
+<table><tr><th>Property</th><th>Meaning</th></tr>
+<tr><td><code>rows</code>, <code>cols</code></td><td>Dimensions used to generate the grid.</td></tr>
+<tr><td><code>seed</code></td><td>Random seed used by the C++ generator.</td></tr>
+<tr><td><code>visitedCells</code></td><td>Number of cells reached, equal to rows × cols for a complete generation.</td></tr>
+<tr><td><code>cells</code></td><td>Two-dimensional maze representation; each cell contains four wall flags.</td></tr>
+<tr><td><code>visitOrder</code></td><td>Coordinates in first-visit order, used by the traversal animation.</td></tr>
+</table>
+<h3>Correctness properties</h3>
+<ul>
+  <li>Every valid cell is eventually visited because DFS continues until the stack is empty.</li>
+  <li>A cell is marked before being pushed, so no cell is visited twice.</li>
+  <li>Each carved passage is reciprocal: both adjacent wall flags are changed.</li>
+  <li>Every generated cell is connected to the DFS tree, producing a perfect maze with no disconnected regions.</li>
+  <li>The start and finish openings are added only after generation.</li>
+</ul>
+</section>
+
+<section class="section">
+<h2>6. Complexity and Algorithm Analysis</h2>
+<table><tr><th>Resource</th><th>Analysis</th></tr>
+<tr><td>Time complexity</td><td>O(R × C). Each cell is visited once and each cell examines at most four directions.</td></tr>
+<tr><td>Space complexity</td><td>O(R × C). The maze, visited array, stack, and visit-order list are all bounded by the number of cells.</td></tr>
+<tr><td>Graph interpretation</td><td>Each grid cell is a graph vertex; possible movements are edges between orthogonal neighbors.</td></tr>
+<tr><td>Traversal strategy</td><td>Depth-First Search using LIFO behavior through <code>stack.back()</code> and <code>stack.pop_back()</code>.</td></tr>
+</table>
+<h3>Why use an explicit stack?</h3>
+<p>Recursive DFS is concise, but every recursive call consumes call-stack memory. The project uses a vector as an explicit stack, making the DFS behavior visible and directly connected to the data-structures learning objective. The algorithm still has the same DFS order and complexity.</p>
+<h3>Randomization</h3>
+<p>At each current cell, the available unvisited neighbors are collected and one is selected randomly. This changes the shape of the DFS spanning tree and therefore the maze layout. The Mersenne Twister generator is seeded from the command line or from <code>std::random_device</code>.</p>
+</section>
+
+<section class="section">
+<h2>7. Web Interface and Visualization</h2>
+<p>The web layer does not reimplement the maze algorithm. It requests the result from the C++ engine and visualizes the data returned by the server.</p>
+<h3>Controls</h3>
+<ul>
+  <li><strong>Grid size:</strong> selects a square grid from 8 × 8 to 28 × 28 in the browser.</li>
+  <li><strong>Seed:</strong> optional numeric value for repeatable maze generation.</li>
+  <li><strong>Generate maze:</strong> sends a request to the backend and draws the returned wall structure.</li>
+  <li><strong>Show DFS traversal:</strong> replays the C++ <code>visitOrder</code> and highlights cells progressively.</li>
+</ul>
+<h3>Canvas rendering</h3>
+<p>The browser creates one Canvas cell for each C++ maze cell. A wall flag of 1 causes a line to be drawn on that side. The start cell is orange, the finish cell is pink, and traversed cells use a darker blue highlight. The visual representation therefore maps directly to the C++ data structure.</p>
+<img src="report-assets/deployed-app.png" alt="Deployed DFS Maze Lab interface">
+<p class="caption">Figure 1. Deployed DFS Maze Lab showing a generated 20 × 20 maze after complete traversal.</p>
+</section>
+
+<section class="section">
+<h2>8. Backend API and Error Handling</h2>
+<h3>Endpoint</h3>
+<p><code>GET /api/maze/generate?rows=20&amp;cols=20&amp;seed=123</code></p>
+<table><tr><th>Stage</th><th>Implementation detail</th></tr>
+<tr><td>Validation</td><td>Rows and columns must be integers from 5 to 35. The seed must be a non-negative integer.</td></tr>
+<tr><td>Compilation</td><td>If the executable is missing, the server runs <code>g++ -std=c++17 -O2 maze_dfs.cpp -o maze_dfs.exe</code>.</td></tr>
+<tr><td>Execution</td><td><code>execFile</code> starts the C++ program with validated arguments.</td></tr>
+<tr><td>Parsing</td><td>Standard output is parsed as JSON before being returned to the browser.</td></tr>
+<tr><td>Errors</td><td>Invalid input returns 400, unavailable compiler returns 503, and engine or JSON failures return 500 with an explicit error.</td></tr>
+</table>
+<h3>Static serving and mode selection</h3>
+<p>Express serves the <code>public</code> directory and also provides the health endpoint <code>/api/health</code>. The <code>MAZE_ONLY=true</code> environment variable skips the unrelated PostgreSQL authentication initialization, allowing the mini project to run independently.</p>
+</section>
+
+<section class="section">
+<h2>9. Technology Stack</h2>
+<table><tr><th>Technology</th><th>Role in the project</th></tr>
+<tr><td>C++17</td><td>Core DFS algorithm, maze model, random generation, traversal order, JSON serialization.</td></tr>
+<tr><td>GNU g++</td><td>Compiles the C++ source into the executable used by the server.</td></tr>
+<tr><td>Node.js</td><td>Server-side JavaScript runtime.</td></tr>
+<tr><td>Express.js</td><td>HTTP server, static frontend hosting, and maze API endpoint.</td></tr>
+<tr><td>HTML5</td><td>Page structure and interface elements.</td></tr>
+<tr><td>CSS3</td><td>Responsive dark-themed layout, cards, controls, typography, and visual hierarchy.</td></tr>
+<tr><td>JavaScript</td><td>Fetch API calls, input handling, Canvas rendering, and traversal animation.</td></tr>
+<tr><td>HTML Canvas</td><td>Draws maze walls and cell highlights dynamically.</td></tr>
+<tr><td>Render</td><td>Public deployment platform; build configuration is defined in <code>render.yaml</code>.</td></tr>
+<tr><td>GitHub</td><td>Source-code hosting and deployment source repository.</td></tr>
+</table>
+<h3>Repository structure</h3>
+<pre>dfs-maze-project/
+├── maze_dfs.cpp          # Main standard C++ DFS web engine
+├── dfs.cpp               # Original SFML desktop implementation
+├── src/index.js          # Express server and C++ bridge
+├── public/
+│   ├── index.html        # User interface
+│   ├── styles.css        # Presentation
+│   └── app.js            # Browser behavior and Canvas drawing
+├── render.yaml           # Render deployment configuration
+├── package.json          # Node dependencies and scripts
+└── README.md             # Setup and deployment instructions</pre>
+</section>
+
+<section class="section">
+<h2>10. Build, Run, and Deployment</h2>
+<h3>Local execution</h3>
+<pre>cd D:\c++\dfs-maze-project
+npm install
+$env:MAZE_ONLY="true"
+npm start</pre>
+<p>After the server starts, the interface is available at <code>http://localhost:3000</code> or the selected port. The API can be tested directly with a URL such as <code>/api/maze/generate?rows=10&amp;cols=10&amp;seed=2026</code>.</p>
+<h3>Render deployment</h3>
+<p>The repository contains a Render Blueprint with the following build and start behavior:</p>
+<pre>buildCommand: npm install &amp;&amp; g++ -std=c++17 -O2 maze_dfs.cpp -o maze_dfs.exe
+startCommand: npm start
+healthCheckPath: /api/health
+MAZE_ONLY: true</pre>
+<p>Render installs dependencies, compiles the standard C++ engine, starts Express, and exposes the website through an HTTPS URL. The deployed demonstration shown in Figure 1 is available at <code>https://maze-se26.onrender.com</code>.</p>
+<h3>Verification performed</h3>
+<ul>
+  <li>Compiled the C++ DFS engine successfully with C++17.</li>
+  <li>Validated JSON output from an 8 × 8 test maze with 64 visited cells.</li>
+  <li>Verified the homepage response with HTTP 200.</li>
+  <li>Verified a 10 × 10 API request with 100 visited cells.</li>
+  <li>Verified invalid dimensions return HTTP 400 and a descriptive error.</li>
+</ul>
+</section>
+
+<section class="section">
+<h2>11. Conclusion</h2>
+<p>DFS Maze Lab connects data-structures theory with a practical software system. The central algorithm is a randomized iterative Depth-First Search that builds a spanning tree over a rectangular grid. The explicit stack, visited array, direction vectors, reciprocal wall updates, and backtracking behavior make the algorithm’s operation clear and demonstrable.</p>
+<p>The surrounding web architecture preserves the C++ implementation as the source of truth for maze generation. Express provides a small, controlled bridge, while the browser provides a responsive interface and visual explanation of the traversal order. The final result is a reproducible, deployable mini project that demonstrates algorithm design, systems integration, user interface development, and cloud deployment.</p>
+<div class="card"><strong>Key result:</strong> for an R × C maze, the C++ engine visits all R × C cells exactly once, returns the complete maze structure and visit sequence as JSON, and the web interface renders that result interactively.</div>
+<p class="page-note">Project source repository: github.com/prashantiron2-lab/maze_SE26</p>
+</section>
+</body>
+</html>
